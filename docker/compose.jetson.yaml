@@ -1,0 +1,37 @@
+name: ros2-jetson-workspace
+
+x-jetson-workspace: &jetson_workspace
+  working_dir: /workspace
+  volumes:
+    - ..:/workspace
+    - ../src:/workspace/src
+  network_mode: host
+  privileged: true
+  stdin_open: true
+  tty: true
+
+x-jetson-command: &jetson_command
+  command: >
+    bash -lc "
+      source /opt/ros/$${ROS_DISTRO}/setup.bash &&
+      if [ -f install/local_setup.bash ]; then source install/local_setup.bash; fi &&
+      exec bash
+    "
+
+services:
+  jetpack6-humble:
+    <<: [*jetson_workspace, *jetson_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-jetson
+      args:
+        JETSON_IMAGE: nvcr.io/nvidia/l4t-jetpack:r36.4.0
+        ROS_DISTRO: humble
+    image: ros2-jetson-workspace:jetpack6-humble
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: humble
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    runtime: nvidia
+    profiles: ["jetpack6-humble"]

@@ -1,0 +1,16 @@
+# ROS 2 / colcon generated output
+build/
+install/
+log/
+
+# Local imported repositories for this template workflow
+src/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Editor and OS noise
+.DS_Store
+.vscode/
+.idea/

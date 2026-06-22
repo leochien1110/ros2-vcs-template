@@ -1,0 +1,19 @@
+ARG BASE_IMAGE=ros:humble-ros-base-jammy
+FROM ${BASE_IMAGE}
+
+ARG ROS_DISTRO=humble
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ROS_DISTRO=${ROS_DISTRO}
+
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    python3-vcstool \
+    ros-${ROS_DISTRO}-desktop-full \
+    ros-dev-tools \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+CMD ["bash"]

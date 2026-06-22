@@ -1,0 +1,238 @@
+name: ros2-workspace
+
+x-workspace: &workspace
+  working_dir: /workspace
+  volumes:
+    - ..:/workspace
+    - ../src:/workspace/src
+  stdin_open: true
+  tty: true
+
+x-desktop-workspace: &desktop_workspace
+  working_dir: /workspace
+  environment:
+    DISPLAY: ${DISPLAY:-:0}
+    QT_X11_NO_MITSHM: "1"
+  volumes:
+    - ..:/workspace
+    - ../src:/workspace/src
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  stdin_open: true
+  tty: true
+
+x-ros-command: &ros_command
+  command: >
+    bash -lc "
+      source /opt/ros/$${ROS_DISTRO}/setup.bash &&
+      if [ -f install/local_setup.bash ]; then source install/local_setup.bash; fi &&
+      exec bash
+    "
+
+services:
+  humble-amd64:
+    <<: [*workspace, *ros_command]
+    image: ros:humble-ros-base-jammy
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: humble
+    profiles: ["humble-amd64"]
+
+  humble-arm64:
+    <<: [*workspace, *ros_command]
+    image: ros:humble-ros-base-jammy
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: humble
+    profiles: ["humble-arm64"]
+
+  jazzy-amd64:
+    <<: [*workspace, *ros_command]
+    image: ros:jazzy-ros-base-noble
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: jazzy
+    profiles: ["jazzy-amd64"]
+
+  jazzy-arm64:
+    <<: [*workspace, *ros_command]
+    image: ros:jazzy-ros-base-noble
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: jazzy
+    profiles: ["jazzy-arm64"]
+
+  humble-desktop-full-amd64:
+    <<: [*desktop_workspace, *ros_command]
+    image: osrf/ros:humble-desktop-full
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: humble
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+    profiles: ["humble-desktop-full-amd64"]
+
+  humble-desktop-full-arm64:
+    <<: [*desktop_workspace, *ros_command]
+    image: osrf/ros:humble-desktop-full
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: humble
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+    profiles: ["humble-desktop-full-arm64"]
+
+  jazzy-desktop-full-amd64:
+    <<: [*desktop_workspace, *ros_command]
+    image: osrf/ros:jazzy-desktop-full
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: jazzy
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+    profiles: ["jazzy-desktop-full-amd64"]
+
+  jazzy-desktop-full-arm64:
+    <<: [*desktop_workspace, *ros_command]
+    image: osrf/ros:jazzy-desktop-full
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: jazzy
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+    profiles: ["jazzy-desktop-full-arm64"]
+
+  humble-cuda12-amd64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:12.9.2-devel-ubuntu22.04
+        ROS_DISTRO: humble
+    image: ros2-workspace:humble-cuda12-amd64
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: humble
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["humble-cuda12-amd64"]
+
+  humble-cuda12-arm64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:12.9.2-devel-ubuntu22.04
+        ROS_DISTRO: humble
+    image: ros2-workspace:humble-cuda12-arm64
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: humble
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["humble-cuda12-arm64"]
+
+  jazzy-cuda12-amd64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:12.9.2-devel-ubuntu24.04
+        ROS_DISTRO: jazzy
+    image: ros2-workspace:jazzy-cuda12-amd64
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: jazzy
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["jazzy-cuda12-amd64"]
+
+  jazzy-cuda12-arm64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:12.9.2-devel-ubuntu24.04
+        ROS_DISTRO: jazzy
+    image: ros2-workspace:jazzy-cuda12-arm64
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: jazzy
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["jazzy-cuda12-arm64"]
+
+  humble-cuda13-amd64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:13.3.0-devel-ubuntu22.04
+        ROS_DISTRO: humble
+    image: ros2-workspace:humble-cuda13-amd64
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: humble
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["humble-cuda13-amd64"]
+
+  humble-cuda13-arm64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:13.3.0-devel-ubuntu22.04
+        ROS_DISTRO: humble
+    image: ros2-workspace:humble-cuda13-arm64
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: humble
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["humble-cuda13-arm64"]
+
+  jazzy-cuda13-amd64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:13.3.0-devel-ubuntu24.04
+        ROS_DISTRO: jazzy
+    image: ros2-workspace:jazzy-cuda13-amd64
+    platform: linux/amd64
+    environment:
+      ROS_DISTRO: jazzy
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["jazzy-cuda13-amd64"]
+
+  jazzy-cuda13-arm64:
+    <<: [*workspace, *ros_command]
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-cuda
+      args:
+        CUDA_IMAGE: nvidia/cuda:13.3.0-devel-ubuntu24.04
+        ROS_DISTRO: jazzy
+    image: ros2-workspace:jazzy-cuda13-arm64
+    platform: linux/arm64
+    environment:
+      ROS_DISTRO: jazzy
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    gpus: all
+    profiles: ["jazzy-cuda13-arm64"]
